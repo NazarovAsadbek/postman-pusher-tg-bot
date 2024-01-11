@@ -4,7 +4,7 @@ import {Telegraf} from "telegraf";
 import {IBotContext} from "../context/context.interface";
 import {IConfigService} from "../config/config.interface";
 import {get_collection, get_envirenments} from "../api/postman";
-import {newmanResponseHandler} from "./run-postman.service";
+import {newmanResponseHandler, parseUserToSendIds} from "./run-postman.service";
 import {NEWMAN_CONFIG} from "./run-postman.config";
 
 export class RunPostmanCommand extends Command {
@@ -12,28 +12,22 @@ export class RunPostmanCommand extends Command {
         super(bot, configService);
     }
 
-    handle(ctx: IBotContext): void {
-        const that = this;
+    async handle(): Promise<void> {
         const botToken: string = this.configService.get('BOT_TOKEN');
-        const chatID: string = this.configService.get('CHAT_ID');
         const userToSendIds: string = this.configService.get('USER_TO_SEND_IDS');
+        const parsedUsers: string[] = parseUserToSendIds(userToSendIds);
 
-        get_envirenments()
-            .then((env) => {
+        for (const id of parsedUsers) {
+            try {
+                const env = await get_envirenments();
+                const collection = await get_collection();
 
-                get_collection()
-                    .then((collection) => {
-                        newman.run(NEWMAN_CONFIG({collection, env}), (error) => {
-                            newmanResponseHandler({error, bot: that.bot, chatID, botToken, ctx, userToSendIds})
-                        });
-                    })
-                    .catch(() => {
-                        throw new Error('Error get collection')
-                    })
-
-            })
-            .catch(() => {
-                throw new Error('Error get collection or envirenments')
-            })
+                newman.run(NEWMAN_CONFIG({ collection, env }), (error) => {
+                    newmanResponseHandler({ error, bot: this.bot, chatID: id, botToken, userToSendIds });
+                });
+            } catch (error) {
+                console.error(error || 'Error occurred');
+            }
+        }
     }
 }

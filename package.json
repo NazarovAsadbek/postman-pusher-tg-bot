@@ -25,6 +25,8 @@
     "newman-reporter-htmlextra": "^1.23.0"
   },
   "dependencies": {
+    "@types/node-schedule": "^2.1.5",
+    "node-schedule": "^2.1.1",
     "telegraf": "^4.15.3",
     "telegraf-session-local": "^2.1.1",
     "typescript": "^5.3.3"

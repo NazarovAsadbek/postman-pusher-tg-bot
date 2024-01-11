@@ -6,6 +6,7 @@ import {IBotContext} from "./context/context.interface";
 import {Command} from "./commands/comman.class";
 import {StartCommand} from "./commands/start.command";
 import {HearCommand} from "./commands/hear.command";
+import {AutomatedTestRunnerCommand} from "./commands/automated-test-runner.command";
 
 class Bot {
     bot: Telegraf<IBotContext>;
@@ -18,7 +19,11 @@ class Bot {
     }
 
     init(): void {
-        this.commands = [new StartCommand(this.bot, this.configService), new HearCommand(this.bot, this.configService)]
+        this.commands = [
+            new StartCommand(this.bot, this.configService),
+            new HearCommand(this.bot, this.configService),
+            new AutomatedTestRunnerCommand(this.bot, this.configService),
+        ]
         for (const command of this.commands) {
             command.handle();
         }
