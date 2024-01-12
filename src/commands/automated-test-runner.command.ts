@@ -17,6 +17,7 @@ export class AutomatedTestRunnerCommand extends Command {
         const postmanCommand = new RunPostmanCommand(this.bot, this.configService)
         const parsedUsers: string[] = parseUserToSendIds(userToSendIds)
         const rule = new schedule.RecurrenceRule();
+        rule.tz = 'Asia/Tashkent';
         rule.dayOfWeek = [0, new schedule.Range(0, 6)];
         rule.hour = 12;
         rule.minute = 0;
